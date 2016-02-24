@@ -2,11 +2,10 @@ var passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , BasicStrategy = require('passport-http').BasicStrategy
   , ClientPasswordStrategy = require('passport-oauth2-client-password').Strategy
-  , BearerStrategy = require('passport-http-bearer').Strategy
+  , HTTPHeaderTokenStrategy = require('passport-http-header-token').Strategy
   , UserModel = require('./db/mongoose').UserModel
   , ClientModel = require('./db/mongoose').ClientModel
   , AccessTokenModel = require('./db/mongoose').AccessTokenModel
-    , HTTPHeaderTokenStrategy = require('passport-http-header-token').Strategy
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
@@ -65,12 +64,12 @@ passport.use(new HTTPHeaderTokenStrategy(
                 AccessTokenModel.remove({ token: accessToken }, function (err) {
                     if (err) return done(err);
                 });
-                return done(null, false, { message: 'Token expired' });
+                return done(null, false, { message: 'Токен просрочен' });
             }
 
             UserModel.findOne({username: token.username}, function(err, user) {
                 if (err) { return done(err); }
-                if (!user) { return done(null, false, { message: 'Unknown user' }); }
+                if (!user) { return done(null, false, { message: 'Неизвестный пользователь' }); }
 
                 var info = { scope: '*' }
                 done(null, user, info);

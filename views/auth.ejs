@@ -1,13 +1,20 @@
 <form action="/signup" method="post">
 	<div>
-	<label>Имя пользователя:</label>
-	<input type="text" name="username"/><br/>
+		<label>Имя пользователя:</label>
+		<input type="text" name="username"/><br/>
 	</div>
 	<div>
-	<label>Пароль:</label>
-	<input type="password" name="password"/>
+		<label>Пароль:</label>
+		<input type="password" name="password"/>
 	</div>
 	<div>
-	<input type="submit" value="Зарегестрироваться"/>
+		<select class="selectpicker" data-style="btn-info" name="selectHouse">
+			<optgroup label="Название издательского дома" >
+			<% publishHouse.forEach( function( house ) { %>
+				<option name= <%= house.name %> ><%= house.name %></option>
+			<% }) %>
+			</optgroup >
+		</select>
 	</div>
+	<input type="submit" value="Зарегистрироваться"/>
 </form>

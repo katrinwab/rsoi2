@@ -1,19 +1,20 @@
 var passport = require('passport')
   , login = require('connect-ensure-login')
-  , log = require('./db/log')(module)
   , UserModel = require('./db/mongoose').UserModel
-  , AccessTokenModel = require('./db/mongoose').AccessTokenModel
+  , PublishingHouseModel = require('./db/mongoose').PublishingHouseModel
+  , fs = require('fs');
 
 
 exports.index = function(req, res) {
     var username = "";
-  if (req.isAuthenticated())
-    username = req.user.username;
-    AccessTokenModel.findOne({username: username}, function (err, token) {
-      if (token)
-        res.cookie('token', token.token);
-      res.render('main');
-    })
+    if (req.isAuthenticated())
+      username = req.user.username;
+
+      var ejs = require('ejs'),
+          templateString = fs.readFileSync(__dirname + '/views/user.ejs', 'utf-8'),
+          html = ejs.render(templateString, {username : username}),
+          file = fs.readFileSync(__dirname + '/public/mainHTML.html');
+      res.end(html + file);
 };
 
 exports.loginForm = function(req, res) {
@@ -21,7 +22,14 @@ exports.loginForm = function(req, res) {
 };
 
 exports.authForm = function(req, res) {
-  res.render('auth');
+  PublishingHouseModel.find(function (err, publishHouse) {
+    if (!err) {
+      res.render('auth', { publishHouse: publishHouse });
+    } else {
+      res.statusCode = 500;
+      return res.send({error: 'Ошибка сервера'});
+    }
+  })
 };
 
 exports.signup = function(req, res) {
@@ -31,10 +39,29 @@ exports.signup = function(req, res) {
       return res.send({ error: 'Пользователь с таким именем уже существует' });
     } else {
       var user = new UserModel({ username: req.body.username, password: req.body.password });
-      user.save(function(err, user) {
-        if(err) return log.error(err);
-      });
-      res.redirect('http://localhost:3000/main');
+
+      PublishingHouseModel.findOne({name: req.body.selectHouse}, function (err, house) {
+        if (err) {
+          res.statusCode = 500;
+          return res.send({error: 'Ошибка сервера'});
+        } else {
+          house.users.push(req.body.username);
+          house.save(function(err, user) {
+            if(err) {
+              res.statusCode = 500;
+              return res.send({error: 'Ошибка сервера'});
+            }
+          });
+          user.save(function(err, user) {
+            if(err) {
+              res.statusCode = 500;
+              return res.send({error: 'Ошибка сервера'});
+            }
+          });
+        }
+      })
+      res.statusCode = 200;
+      return res.send({status: 'Пользователь сохранен'});
     }
   })
 };
@@ -44,7 +71,8 @@ exports.login =
 
 exports.logout = function(req, res) {
   req.logout();
-  res.redirect('/');
+  res.statusCode = 200;
+  return res.send({status: 'OK'});
 }
 
 exports.account = [
@@ -53,7 +81,7 @@ exports.account = [
       res.render('account', { user: req.user });
     else {
       res.statusCode = 401;
-      return res.send({ error: 'Доступ запрещен' });
+      res.send({ error: 'Доступ запрещен' });
     }
   }
 ]
