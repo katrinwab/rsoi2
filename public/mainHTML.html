@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LAB2RSOI</title>
+    <script>
+        function submitForm(form) {
+            var textField = document.getElementById("nameFind");
+            form.action = "/api/magazine/" + textField.value;
+            form.removeItem(textField.key);
+            form.submit();
+        }
+
+        function changeDescription(form) {
+            var textField = document.getElementById("nameChange");
+            form.action = "/test/magazine/"+ textField.value + "?_method=PUT";
+            form.removeItem(textField.key);
+            form.submit();
+        }
+
+        function deleteMagazine(form) {
+            var textField = document.getElementById("nameDelete");
+            form.action = "/test/magazine/"+ textField.value + "?_method=DELETE";
+            form.removeItem(textField.key);
+            form.submit();
+        }
+    </script>
+</head>
+
+<body>
+
+    <form action="/dialog/authorize" method="get">
+        <div>
+            <input type="submit" value="Авторизовать приложение"/>
+        </div>
+    </form>
+    <form action="/api/magazines" method="get">
+        <div>
+            <input type="submit" value="Все журналы"/>
+        </div>
+    </form>
+    <form onsubmit="submitForm(this)" action="" method="get">
+        <div>
+            <label>Найти журнал по имени:</label>
+            <input id="nameFind" type="text"/>
+            <input type="submit" value="Найти"  />
+        </div>
+    </form>
+
+    <form onsubmit="changeDescription(this)" action="" method="post">
+        <div>
+            <label>Изменить описание журнала</label>
+        </div>
+        <div>
+            <label>Название журнала</label>
+            <input id="nameChange" type="text" />
+        </div>
+        <div>
+            <label>Ввести описание</label>
+            <input type="text" name="description"/>
+        </div>
+        <input type="submit" value="Изменить"/>
+        </div>
+    </form>
+
+    <form onsubmit="deleteMagazine(this)" action="" method="post">
+        <div>
+            <label>Удалить журнал по имени:</label>
+            <input id="nameDelete" type="text" name="name"/>
+            <input type="submit" value="Удалить"/>
+        </div>
+    </form>
+
+    <form action="/test/publishingHouse" method="post">
+        <div>
+            <label>Добавить новый журнал в свой издательский дом.</label>
+            <label>Новое название журнала:</label>
+            <input type="text" name="nameMagazine"/>
+            <input type="submit" value="Добавить"/>
+        </div>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+<% if (username != '') {%>
+    <div>
+        <span class="name"><%= username %></span>
+        <a href="/account">Информация о пользователе</a>
+        <a href="/logout">Выйти</a>
+    </div>
+<% } else { %>
+    <div>
+        <a href="/login">Войти</a>
+        <a href="/signup">Зерегистироваться</a>
+    </div>
+<% } %>

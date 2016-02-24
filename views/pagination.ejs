@@ -1,0 +1,29 @@
+<form action="/main" method="get">
+    <div>
+        <input type="submit" value="На главную"/>
+    </div>
+</form>
+
+<ul class="list-group">
+    <% magazines.forEach( function( magazine ) { %>
+    <li class="list-group-item">
+        <p>Название: <%= magazine.name %>
+            ,    Издательский дом: <%= magazine.pubHouseName %>
+            ,    Описание: <%= magazine.description %>
+        </p>
+    </li>
+    <% }) %>
+</ul>
+
+<% if (pageCount > 1) { %>
+<ul class="pagination">
+    <% var i = 1; %>
+    <% for (i; i<=pageCount; i++) { %>
+    <% if (currentPage == i) { %>
+    <li class="active"><span><%= i %> <span class="sr-only">(текущая)</span></span></li>
+    <% } else { %>
+    <li><a href="/api/magazines/?page=<%= i %>"><%= i %></a></li>
+    <% } %>
+    <% } %>
+</ul>
+<% } %>
